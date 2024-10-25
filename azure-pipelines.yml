@@ -1,0 +1,30 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+
+  - script: |
+      echo "Setting up Python environment..."
+      python -m venv venv
+      source venv/bin/activate
+      if [ -f requirements.txt ]; then
+        echo "Installing dependencies..."
+        pip install -r requirements.txt
+      else
+        echo "No requirements file found; skipping dependency installation."
+      fi
+    displayName: 'Install dependencies'
+
+  - script: |
+      echo "Running tests..."
+      source venv/bin/activate
+      python -m unittest discover -s . -p "test_*.py"
+    displayName: 'Run tests'
